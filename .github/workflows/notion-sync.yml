@@ -1,0 +1,45 @@
+name: Notion 동기화
+on:
+  push:
+    branches: [main, master]
+    paths-ignore:
+      - 'data/**'
+  schedule:
+    - cron: '3,13,23,33,43,53 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+  pages: write
+concurrency:
+  group: notion-sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: 노션에서 글 가져오기
+        run: node scripts/notion-sync.mjs
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      - name: 바뀐 게 있으면 저장소에 반영
+        id: commit
+        if: ${{ !cancelled() }}
+        run: |
+          git config user.name "notion-sync"
+          git config user.email "actions@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "changed=0" >> "$GITHUB_OUTPUT"
+          else
+            git commit -m "Notion 동기화" && git pull --rebase && git push && echo "changed=1" >> "$GITHUB_OUTPUT"
+          fi
+      - name: 바뀐 게 있으면 사이트 다시 배포하기
+        if: ${{ !cancelled() && steps.commit.outputs.changed == '1' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || echo "배포 요청에 실패했어요. 저장소 Settings → Pages 설정을 확인해 주세요."
