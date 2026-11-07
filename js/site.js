@@ -209,33 +209,6 @@ function sub(s,p,n){var dd=new Date(p.created_at),M={'제목':p.title,'본문':p
    var h={apikey:C.key};if(/^eyJ/.test(C.key))h.Authorization='Bearer '+C.key;
    p=fetch(C.url.replace(/\/+$/,'')+'/rest/v1/posts?select=id,title,body,image,category,created_at&board=eq.'+encodeURIComponent(bd)+'&order=created_at.desc&limit='+lim,{headers:h}).then(ok)}
   p.then(el.hasAttribute('data-catnav')?buildNav:render).catch(function(){msg('글을 불러오지 못했어요.')})})
-})();(function(){
- var C=window.NJ_CONFIG||{},b=document.body,bd=b.getAttribute('data-post'),src=b.getAttribute('data-src')||'supabase',id=new URLSearchParams(location.search).get('id'),base=document.title;
-function sub(s,p,n){var dd=new Date(p.created_at),M={'제목':p.title,'본문':p.body||'','날짜':isNaN(dd)?'':dd.toLocaleDateString('ko-KR'),'번호':n==null?'':n,'카테고리':p.category||''};return s.replace(/\{\{\s*([^}]+?)\s*\}\}/g,function(m,k){return M[k]!=null?M[k]:m})}
- function fsRows(j){return(j||[]).filter(function(x){return x.document}).map(function(x){var f=x.document.fields||{};function s(k){return f[k]&&(f[k].stringValue||f[k].timestampValue)||''}return{id:x.document.name.split('/').pop(),title:s('title'),body:s('body'),image:s('image')||null,category:s('category'),created_at:s('created_at')}})}
- function done(){b.classList.add('bd-ready')}
- function bad(t){var f=false;document.querySelectorAll('[data-bind]').forEach(function(e){if(!f&&e.getAttribute('data-bind')==='title'){e.textContent=t;f=true}else e.hidden=true});if(!f){var m=document.createElement('p');m.textContent=t;(document.querySelector('main')||b).appendChild(m)}done()}
-
-  var rich=window.njRich,lock=window.njLock;
- function fill(p){var dd=new Date(p.created_at),okimg=p.image&&(/^https?:\/\//i.test(p.image)||/^(data\/img|images)\//.test(p.image));
-  document.querySelectorAll('[data-bind]').forEach(function(e){var k=e.getAttribute('data-bind');
-   if(k==='title')e.textContent=p.title;else if(k==='body'){if(p.enc)lock(e,p.enc);else if(p.blocks&&p.blocks.length)rich(e,p.blocks);else e.textContent=p.body||''}else if(k==='date')e.textContent=isNaN(dd)?'':dd.toLocaleDateString('ko-KR');else if(k==='num')e.hidden=true;else if(k==='cat')e.textContent=p.category||'';
-   else if(k==='image'){if(okimg&&!(p.inl&&p.blocks&&p.blocks.length)){e.src=p.image;e.alt=p.title||''}else e.hidden=true}
-   else if(k==='imagebg'&&okimg)e.style.backgroundImage='url("'+p.image.replace(/["\\]/g,'')+'")'});
-  document.querySelectorAll('[data-tx]').forEach(function(e){e.textContent=sub(e.getAttribute('data-tx'),p,null)});
-  document.title=p.title?p.title+' | '+base:base;done()}
- function ok(r){if(!r.ok)throw 0;return r.json()}
- if(!id){bad('글을 찾을 수 없어요.');return}
- var pr;
- if(src==='notion')pr=fetch('data/'+encodeURIComponent(bd)+'.json').then(ok).then(function(a){return(a||[]).filter(function(x){return String(x.id)===id})[0]});
- else if(src==='firebase'){
-  if(!C.fk||!C.fp){bad('게시판 연결 정보가 아직 없어요.');return}
-  pr=fetch('https://firestore.googleapis.com/v1/projects/'+encodeURIComponent(C.fp)+'/databases/(default)/documents/posts/'+encodeURIComponent(id)+'?key='+encodeURIComponent(C.fk)).then(ok).then(function(j){return fsRows([{document:j}])[0]})}
- else{
-  if(!C.url||!C.key){bad('게시판 연결 정보가 아직 없어요.');return}
-  var h={apikey:C.key};if(/^eyJ/.test(C.key))h.Authorization='Bearer '+C.key;
-  pr=fetch(C.url.replace(/\/+$/,'')+'/rest/v1/posts?select=id,title,body,image,category,created_at&board=eq.'+encodeURIComponent(bd)+'&id=eq.'+encodeURIComponent(id)+'&limit=1',{headers:h}).then(ok).then(function(a){return a[0]})}
- pr.then(function(p){if(!p)bad('글을 찾을 수 없어요.');else if(src==='notion')fetch('data/'+encodeURIComponent(bd)+'/'+encodeURIComponent(p.id)+'.json').then(ok).then(function(j){p.blocks=j.blocks;p.enc=j.enc}).catch(function(){}).then(function(){fill(p)});else fill(p)}).catch(function(){bad('글을 불러오지 못했어요.')})
 })();document.addEventListener('click',function(e){var t=e.target.closest('[data-ck]');if(!t)return;var a=t.getAttribute('data-ck'),s=t.getAttribute('data-to'),h=t.getAttribute('href');if(!h||h==='#')e.preventDefault();if(a==='show'){var g=t.getAttribute('data-grp');if(!g)return;document.querySelectorAll('[data-ck=show]').forEach(function(x){if(x.getAttribute('data-grp')===g){x.classList.remove('open');x.setAttribute('aria-selected','false')}});t.classList.add('open');t.setAttribute('aria-selected','true');document.querySelectorAll(g+'>[data-panel]').forEach(function(p){p.hidden=!p.matches(s)});return}document.querySelectorAll(s).forEach(function(x){if(a==='open')x.classList.add('open');else if(a==='close')x.classList.remove('open');else x.classList.toggle('open')})});document.addEventListener('keydown',function(e){if((e.key==='Enter'||e.key===' ')&&e.target.matches&&e.target.matches('[data-ck]:not(a):not(button)')){e.preventDefault();e.target.click()}});(function(){var els=document.querySelectorAll('[data-lp]');if(!els.length)return;
 function vid(v){var m=/(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([\w-]{11})/.exec(v||'')||/^\s*([\w-]{11})\s*$/.exec(v||'');return m?m[1]:''}
 function pid(v){var m=/[?&]list=([\w-]+)/.exec(v||'')||/^\s*([\w-]{13,})\s*$/.exec(v||'');return m?m[1]:''}

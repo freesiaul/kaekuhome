@@ -34,22 +34,7 @@
 
 둥지메이커 내보내기 창의 "검색엔진 노출 허용"을 꺼 두면(기본값) 모든 페이지에 검색 제외 표시가 들어가요. 주소를 아는 사람은 열 수 있어요.
 
-## 2. 게시판 연결하기 — Supabase (무료)
-
-게시판: `profile`, `gallery`
-
-1. [supabase.com](https://supabase.com)에 가입하고 **New project**를 만들어요. 리전은 서울이 빨라요. DB 비밀번호는 따로 적어 두세요.
-2. 왼쪽 **SQL Editor**에 이 폴더의 `supabase.sql` 내용을 붙여 넣고 **Run**. (글 표와 보안 규칙이 만들어져요: 읽기는 누구나, 쓰기는 관리자만)
-3. **Authentication → Users → Add user**로 관리자 계정을 만들어요. 이메일은 `(둥지메이커에서 관리자 이메일을 입력하고 다시 내보내세요)` 이어야 해요.
-4. **Authentication** 설정에서 새 가입(Allow new users to sign up)을 꺼요. 이걸 꺼야 다른 사람이 계정을 만들 수 없어요.
-5. **Settings → API Keys**에서 Project URL과 **Publishable key**(`sb_publishable_…`)를 복사해, `js/config.js`에 넣어요. (둥지메이커 내보내기 창에 미리 넣었다면 이미 들어 있어요.)
-6. `https://사이트주소/admin.html`에서 로그인하면 글쓰기·수정·삭제를 할 수 있어요.
-
-**주의:** Secret key(`sb_secret_…`, service_role)는 절대 사이트에 넣지 마세요.
-
-무료 Supabase는 1주일 동안 접속이 없으면 일시정지돼요. 대시보드에서 복구 버튼을 누르면 다시 열려요.
-
-## 3. 노션 연결하기 (무료)
+## 2. 노션 연결하기 (무료)
 
 게시판: `diary`, `profile`, `timeline`
 
@@ -73,7 +58,7 @@
 - **캘린더**: 노션에 `날짜` 속성이 있는 데이터베이스를 만들고 일정을 적으면 캘린더 위젯에 점이 찍혀요. `공개` 체크박스 속성을 만들면 체크한 일정만 올라가요(없으면 전부). 이 데이터베이스도 통합에 연결해야 하고, 위의 2~6번과 같은 순서예요.
 - 노션에 올린 이미지는 주소가 1시간 뒤 만료돼서, 동기화할 때 `data/img/`로 저장해 써요.
 
-## 4. 내 도메인 연결하기 (선택)
+## 3. 내 도메인 연결하기 (선택)
 
 도메인을 사는 건 유료예요(보통 1년에 1~2만 원대). 산 뒤에는 쓰는 호스팅에서 도메인을 추가해요.
 
@@ -90,9 +75,6 @@
 - `index.html`, `*.html` — 페이지
 - `css/site.css` — 공통 스타일
 - `js/site.js` — 효과·탭·게시판 동작
-- `js/config.js` — 게시판 연결 정보(공개 키)
-- `admin.html` — 관리자 화면 (Supabase)
-- `supabase.sql` — DB 만들기용 SQL
 - `.github/workflows/notion-sync.yml`, `scripts/` — 노션 자동 동기화
 - `data/` — 노션에서 가져온 글·일정
 - `images/` — 줄여 놓은 이미지
